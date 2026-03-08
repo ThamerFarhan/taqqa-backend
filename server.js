@@ -6,7 +6,8 @@ const rateLimit = require('express-rate-limit');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer').default || require('nodemailer');
+const nodemailerLib = require('nodemailer');
+const nodemailer = nodemailerLib.default ? nodemailerLib.default : nodemailerLib;
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -98,11 +99,11 @@ async function initDB() {
 }
 
 // ===================== EMAIL =====================
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailerLib.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD // App Password من Google
+    pass: process.env.GMAIL_APP_PASSWORD
   }
 });
 
