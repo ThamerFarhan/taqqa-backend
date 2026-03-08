@@ -6,8 +6,8 @@ const rateLimit = require('express-rate-limit');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailerLib = require('nodemailer');
-const nodemailer = nodemailerLib.default ? nodemailerLib.default : nodemailerLib;
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -101,18 +101,6 @@ async function initDB() {
 }
 
 // ===================== EMAIL =====================
-const transporter = nodemailerLib.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
 
 async function sendVerificationEmail(email, username, code, type = 'verify') {
   const isVerify = type === 'verify';
@@ -180,8 +168,8 @@ async function sendVerificationEmail(email, username, code, type = 'verify') {
 </body>
 </html>`;
 
-  await transporter.sendMail({
-    from: `"طقّه والحقّه 🎯" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'طقّه والحقّه <onboarding@resend.dev>',
     to: email,
     subject,
     html
