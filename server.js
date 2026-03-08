@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer').default || require('nodemailer');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -81,7 +81,7 @@ async function initDB() {
     console.log('✅ Database tables initialized');
 
     // Create admin user if not exists
-    const adminEmail = 'ooiyt980@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'ooiyt980@gmail.com';
     const existing = await client.query('SELECT id FROM users WHERE email = $1', [adminEmail]);
     if (existing.rows.length === 0) {
       const hash = await bcrypt.hash('Admin@123', 12);
